@@ -36,17 +36,22 @@ def trainNaiveBayes(data_directory,model):
 						else:
 							nonspamDict[word] += 1.0
 	
-	s = sum([v for (k,v) in spamDict.items()])
-	for (k,v) in spamDict.items():
-		spamDict[k] = v/s
-	s = sum([v for (k,v) in nonspamDict.items()])
-	for (k,v) in nonspamDict.items():
-		nonspamDict[k] = v/s
+	for w in set(spamDict.keys())|set(nonspamDict.keys()):
+		v1 = spamDict.get(w,0.0)
+		v2 = nonspamDict.get(w,0.0)
+		spamDict[w] = v1/(v1+v2);
+		nonspamDict[w] = v2/(v1+v2);
+	#s = sum([v for (k,v) in spamDict.items()])
+	#for (k,v) in spamDict.items():
+	#	spamDict[k] = v/s
+	#s = sum([v for (k,v) in nonspamDict.items()])
+	#for (k,v) in nonspamDict.items():
+	#	nonspamDict[k] = v/s
 	
 	
 	modelFile = open(model, 'w')
 	for k in set(spamDict.keys())|set(nonspamDict.keys()):
-		if k not in ('','the','to'):
+		if k not in ('',' ','the','to'):
 			v1 = spamDict.get(k,epsilon)
 			v2 = nonspamDict.get(k,epsilon)
 			line = k +","+str(v1)+","+str(v2)
@@ -78,9 +83,9 @@ def testNaiveBayes(data_directory,model):
 					word = w.lower()
 					#word = word.translate(None, string.punctuation)
 					a = spamDict.get(word,epsilon)
-					spamSum += (-math.log10(a))
+					spamSum += (-math.log10(a if a!=0.0 else epsilon))
 					a = nonspamDict.get(word,epsilon)
-					nonspamSum += (-math.log10(a))
+					nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
 		 
 		if spamSum<nonspamSum:
 			success += 1.0
@@ -98,9 +103,9 @@ def testNaiveBayes(data_directory,model):
 					word = w.lower()
 					#word = word.translate(None, string.punctuation)
 					a = spamDict.get(word,epsilon)
-					spamSum += (-math.log10(a))
+					spamSum += (-math.log10(a if a!=0.0 else epsilon))
 					a = nonspamDict.get(word,epsilon)
-					nonspamSum += (-math.log10(a))
+					nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
 		if spamSum>nonspamSum:
 			success += 1.0
 			FN += 1.0;
@@ -201,6 +206,8 @@ def trainDecisionTree(data_directory,model):
 def testDecisionTree(data_directory,model):
 	#print os.listdir(data_directory)
 	a = 0
+
+
 
 
 mode,technique,data_directory,model = sys.argv[1:]
