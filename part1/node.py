@@ -1,6 +1,7 @@
 class Node:
     def __init__(self, attribute, splitValue):
-        self.attribute = attribute  #the attribute or word for this node
+        self.attribute = attribute  #word to check for at this node
         self.splitValue = splitValue    #the split value to split between left and right subtree
-        self.left = None
-        self.right = None
+        self.left = None    #left child
+        self.right = None   #right child
+        self.result = ''    #indicates a decision between spam and non-spam
