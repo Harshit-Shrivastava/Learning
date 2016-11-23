@@ -146,14 +146,15 @@ def trainDecisionTree(data_directory,model):
 							nonspamDict[word] = 1.0
 						else:
 							nonspamDict[word] += 1.0
-	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/20]
-	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/20]
+	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/1000]
+	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/1000]
 
 	union_set = set(b1).union(set(b2))
 	attributes = [w[0] for w in union_set]
 	attributeSet = set(attributes)
 
 	dataTable = []
+	dataTable.append(attributes)
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
@@ -189,6 +190,7 @@ def trainDecisionTree(data_directory,model):
 								wordDict[word] = 1
 							else:
 								wordDict[word] += 1
+
 			for w in attributes:
 				datarow.append(wordDict.get(w,0))
 			datarow.append(0) # 1 for spam, 0 for not spam
