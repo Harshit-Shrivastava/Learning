@@ -5,7 +5,7 @@ import operator
 import string
 import copy
 import numpy as np
-from tree import decisionTree
+from decisionTree import createTree
 from node import node
 epsilon = 0.0000000001
 
@@ -132,6 +132,8 @@ def trainDecisionTree(data_directory,model):
 			for line in lines:
 				for w in line.strip().split(' '):
 					word = w.lower()
+					#if word == '':
+					#	raw_input()
 					if word not in ('',' ','the','to'):
 						word = word.translate(None,string.punctuation)
 						if spamDict.get(word,None)==None:
@@ -151,8 +153,9 @@ def trainDecisionTree(data_directory,model):
 							nonspamDict[word] = 1.0
 						else:
 							nonspamDict[word] += 1.0
-	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/1000]
-	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/1000]
+
+	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/500]
+	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/500]
 
 	union_set = set(b1).union(set(b2))
 	attributes = [w[0] for w in union_set]
@@ -216,85 +219,22 @@ def trainDecisionTree(data_directory,model):
 	# so, dataTable has 2646 rows and each row has 7417 attributes where the last attribute is target attribute
 	print len(dataTable)
 	print len(dataTable[0])
+	#print attributes
+	print attributeSet
 	print dataTable[0]
 	# build the decision tree
 	# write the decision tree model on the filename passed as 'model' so that later we can load the model and test new data instances 
 
-	'''creating the decision tree'''
+	#creating the decision tree
 	root = node()
 	tempAttributes = copy.deepcopy(attributes)
 	tempDataTable = copy.deepcopy(dataTable)
 	createTree(root, tempAttributes, tempDataTable)
-	#print decisionTree
+	print root
+
 
 #recursively create the decision tree
-def createTree(root, att, tempDataTable):
-	if len(att) == 0 or root.result == 'spam' or root.result == 'notspam':
-		return root
-	else:
-		attribute = att[0]
-		factor = getSplitFactor(attribute, tempDataTable)	#smaller values in left, larger in right subtree
-		leftDataTable, rightDataTable = splitTrainingset(attribute, factor, tempDataTable)
-		pos, neg = getPosNeg(tempDataTable)
-		root.createNode(attribute, factor, tempDataTable)
-		att.remove(attribute)
-		root.positive = pos		#positive for spam
-		root.negative = neg		#negative for not spam
-		if root.positive == 0:
-			root.result = 'notspam'
-		elif root.negative == 0:
-			root.result = 'spam'
-		root.leftNode = createTree(node(), att, leftDataTable)		#left subtree
-		root.rightNode = createTree(node(), att, rightDataTable)	#right subtree
 
-#calculates the splitting factor.
-#this needs to be decided, for now, mean is taken as the splitting factor
-def getSplitFactor(attribute, tempDataTable):
-	x, y = getIndex(attribute, tempDataTable)
-	temp = []
-	for i in range(1, len(tempDataTable)):
-		temp.append(tempDataTable[i][y])
-	return np.array(temp).mean(0)
-
-#gets the index of the attribute in the table. For now it is always the first attribute,
-#but later, the attribute will be decided based on entropy
-def getIndex(attribute, table):
-	for i, j in enumerate(table):
-		if attribute in j:
-			return (i, j.index(attribute))
-
-#calculates the positive and negative count in order to calculate the confidence factor
-def getPosNeg(tempDataTable):
-	pos = 0
-	neg = 0
-	#classArray = transpose(tempDataTable)[0]
-	for i in range (1,len(tempDataTable)):
-		if tempDataTable[i][len(tempDataTable[0]) - 1] == 1:
-			pos += 1
-		else:
-			neg += 1
-	return pos, neg
-
-#this function creates two subtables with values for the attribute less than and greater than
-#the splitting factor. It later removes the column for this splitting factor from the two subtables
-#as the splitting on this factor has already happened
-def splitTrainingset(attribute, value, tempDataTable):
-	leftDataTable = copy.deepcopy(tempDataTable)
-	rightDataTable = copy.deepcopy(tempDataTable)
-	x, y = getIndex(attribute, tempDataTable)
-	for i in range (1, len(tempDataTable)):
-		if tempDataTable[i][y] > value:
-			leftDataTable.remove(tempDataTable[i])
-		else:
-			rightDataTable.remove(tempDataTable[i])
-	leftDataTable = transpose(leftDataTable)
-	rightDataTable = transpose(rightDataTable)
-	leftDataTable.remove(leftDataTable[y])
-	rightDataTable.remove(rightDataTable[y])
-	return transpose(leftDataTable), transpose(rightDataTable)
-
-def transpose(grid):
-	return zip(*grid)
 
 def testDecisionTree(data_directory,model):
 	#print os.listdir(data_directory)

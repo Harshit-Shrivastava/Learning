@@ -6,7 +6,7 @@ class node:
         self.left = None    #left subtree
         self.right = None   #right subtree
         self.parent = None  #parent of this node
-        self.result = ''    #result at this node
+        self.result = None    #result at this node
         self.dataTable = []  #datatable at this node
         self.positive = 0   #positive for spam
         self.negative = 0   #negative for notspam
