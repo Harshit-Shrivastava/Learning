@@ -160,7 +160,16 @@ def trainDecisionTree(data_directory,model):
 
 	dataTable = []
 	#attributes.append('class')
-	dataTable.append(attributes)
+
+	attList = {}
+	attRow = []
+	for w in attributes:
+		attList[w] = w
+	for w in attList:
+		attRow.append(attList.get(w, 0))
+	attRow.append('class')
+	dataTable.append(attRow)
+
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
@@ -215,8 +224,8 @@ def trainDecisionTree(data_directory,model):
 	root = node()
 	tempAttributes = copy.deepcopy(attributes)
 	tempDataTable = copy.deepcopy(dataTable)
-	decisionTree = createTree(root, tempAttributes, tempDataTable)
-	print decisionTree
+	createTree(root, tempAttributes, tempDataTable)
+	#print decisionTree
 
 #recursively create the decision tree
 def createTree(root, att, tempDataTable):
@@ -258,9 +267,9 @@ def getIndex(attribute, table):
 def getPosNeg(tempDataTable):
 	pos = 0
 	neg = 0
-	classArray = transpose(tempDataTable)[0]
-	for i in range (len(classArray)):
-		if tempDataTable[i][len(tempDataTable[0])] == 1:
+	#classArray = transpose(tempDataTable)[0]
+	for i in range (1,len(tempDataTable)):
+		if tempDataTable[i][len(tempDataTable[0]) - 1] == 1:
 			pos += 1
 		else:
 			neg += 1
