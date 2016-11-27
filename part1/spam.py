@@ -5,6 +5,7 @@ import operator
 import string
 import copy
 import numpy as np
+import pickle
 from decisionTree import createTree
 from node import node
 epsilon = 0.0000000001
@@ -122,6 +123,7 @@ def testNaiveBayes(data_directory,model):
 	print 'Confusion Matrix: '
 	print(' TP = %-20.0f TN = %-20.0f'%(TP,TN))
 	print(' FP = %-20.0f FN = %-20.0f'%(FP,FN))
+
 def trainDecisionTree(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
@@ -154,24 +156,14 @@ def trainDecisionTree(data_directory,model):
 						else:
 							nonspamDict[word] += 1.0
 
-	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/500]
-	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/500]
+	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/1000]
+	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/1000]
 
 	union_set = set(b1).union(set(b2))
 	attributes = [w[0] for w in union_set]
 	attributeSet = set(attributes)
 
 	dataTable = []
-	#attributes.append('class')
-
-	attList = {}
-	attRow = []
-	for w in attributes:
-		attList[w] = w
-	for w in attList:
-		attRow.append(attList.get(w, 0))
-	attRow.append('class')
-	dataTable.append(attRow)
 
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
@@ -214,31 +206,65 @@ def trainDecisionTree(data_directory,model):
 			datarow.append(0) # 1 for spam, 0 for not spam
 			dataTable.append(datarow)
 
-
 	# each attributes is a word which is stored on the list called 'attributes'
 	# so, dataTable has 2646 rows and each row has 7417 attributes where the last attribute is target attribute
 	print len(dataTable)
 	print len(dataTable[0])
-	#print attributes
-	print attributeSet
+	print attributes
+	#print attributeSet
 	print dataTable[0]
 	# build the decision tree
-	# write the decision tree model on the filename passed as 'model' so that later we can load the model and test new data instances 
-
+	# write the decision tree model on the filename passed as 'model' so that later we can load the model and test new data instances
 	#creating the decision tree
-	root = node()
-	tempAttributes = copy.deepcopy(attributes)
-	tempDataTable = copy.deepcopy(dataTable)
-	createTree(root, tempAttributes, tempDataTable)
+	# recursively create the decision tree
+	root = createTree(dataTable, attributes, root = None)
 	print root
-
-
-#recursively create the decision tree
+	#save the decision tree into the model file
+	with open(model, 'wb') as output:
+		pickle.dump(root, output, pickle.HIGHEST_PROTOCOL)
+	print 'Decision tree saved to memory'
+	#print 'reading file'
+	#print (pickle.load(open(model, 'rb')))
 
 
 def testDecisionTree(data_directory,model):
 	#print os.listdir(data_directory)
-	a = 0
+	nonspamDict = {}
+	spamDict = {}
+	print('Testing the Decision Tree Classifier... Please wait')
+	for fname in os.listdir(data_directory + '/spam'):
+		with open(data_directory + '/spam/' + fname, 'r') as f:
+			lines = f.readlines()
+		for line in lines:
+			for w in line.strip().split(' '):
+				word = w.lower()
+				if word not in ('', ' ', 'the', 'to'):
+					word = word.translate(None, string.punctuation)
+					if spamDict.get(word, None) == None:
+						spamDict[word] = 1.0
+					else:
+						spamDict[word] += 1.0
+
+	for fname in os.listdir(data_directory + '/notspam'):
+		with open(data_directory + '/notspam/' + fname, 'r') as f:
+			lines = f.readlines()
+		for line in lines:
+			for w in line.strip().split(' '):
+				word = w.lower()
+				if word not in ('', ' ', 'the', 'to'):
+					word = word.translate(None, string.punctuation)
+					if nonspamDict.get(word, None) == None:
+						nonspamDict[word] = 1.0
+					else:
+						nonspamDict[word] += 1.0
+
+	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict) / 1000]
+	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict) / 1000]
+
+	union_set = set(b1).union(set(b2))
+	attributes = [w[0] for w in union_set]
+	attributeSet = set(attributes)
+	dataTable = []
 
 
 
