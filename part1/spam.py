@@ -9,6 +9,7 @@ import pickle
 from decisionTree import createTree, traverseTree
 from node import node
 epsilon = 0.0000000001
+dividend = 500
 
 def trainNaiveBayes(data_directory,model):
 	#print 'Hello-word!,'.translate(None, string.punctuation)
@@ -156,8 +157,8 @@ def trainDecisionTree(data_directory,model):
 						else:
 							nonspamDict[word] += 1.0
 
-	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/1000]
-	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/1000]
+	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict)/dividend]
+	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict)/dividend]
 
 	union_set = set(b1).union(set(b2))
 	attributes = [w[0] for w in union_set]
@@ -257,8 +258,8 @@ def testDecisionTree(data_directory,model):
 						else:
 							nonspamDict[word] += 1.0
 
-	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict) / 1000]
-	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict) / 1000]
+	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict) / dividend]
+	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict) / dividend]
 
 	union_set = set(b1).union(set(b2))
 	attributes = [w[0] for w in union_set]
@@ -329,7 +330,7 @@ def testDecisionTree(data_directory,model):
 			correct += 1
 	print 'Accuracy'
 	print correct
-	print float(correct/len(dataTable))
+	print float(correct)/len(dataTable)
 
 mode,technique,data_directory,model = sys.argv[1:]
 if mode == 'train':

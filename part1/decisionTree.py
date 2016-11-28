@@ -1,4 +1,5 @@
 import copy
+import operator
 from math import log
 from node import node
 '''
@@ -79,8 +80,9 @@ def getOverfittingResult(tempDataTable):
 		return 'notspam'
 
 def chooseAttribute(attributes, dataTable):
-	allFactors = []
-	igList = []
+	#allFactors = []
+	#igList = []
+	'''
 	for attr in attributes:
 		s,e = getRange(attr, attributes, dataTable)
 		factors = findAllFactors(s, e)
@@ -96,7 +98,26 @@ def chooseAttribute(attributes, dataTable):
 	#factIndex = allFactors.index(max(entropies))
 	maxFactor = allFactors[igIndex]
 	splitAttribute = attributes[igIndex]
-	return splitAttribute, maxFactor
+	return splitAttribute, maxFactor'''
+
+	bestThresholds = []
+	bestGains = []
+	for j in range(len(dataTable[0])-1):
+		w = attributes[j]
+		L = [row[j] for row in dataTable]	
+		s,e = min(L),max(L)
+		thresholds = findAllFactors(s,e)
+		gains = []
+		for t in thresholds:
+			gains.append(findInformationGain(t,j,attributes,dataTable)) 
+		max(gains)
+		max_index, max_value = max(enumerate(gains), key=operator.itemgetter(1))
+		bestGains.append(max_value)
+		bestThresholds.append(thresholds[max_index])
+
+	max_index, max_value = max(enumerate(bestGains), key=operator.itemgetter(1))
+	finalThreshold = bestThresholds[max_index]
+	return attributes[max_index],finalThreshold
 
 def getRange(attr, attributes, dataTable):
 	index = attributes.index(attr)
@@ -106,13 +127,43 @@ def getRange(attr, attributes, dataTable):
 	return low, high
 
 def findAllFactors(low, high):
+	
+	if (low>high):
+		raise Exception('Low can not be higher than high ')
+	if low == high:
+		factors = []
+		factors.append(low)
+		return factors
 	val = (high-low)/4
 	factors = []
 	item = low
-	for i in range(1, 5):
+	for i in range(1, 4):
 		item += val
 		factors.append(item)
 	return factors
+
+def getEntropy(dataTable):
+	pos,neg = getPosNeg(dataTable)
+	if pos == 0 or neg == 0:
+		return 0.0
+	total = float(pos+neg)
+	return -(pos/total)*log(pos/total,2) - (neg/total)*log(neg/total,2)
+
+def findInformationGain(threshold, wordIndex, attributes, dataTable):
+	wholeColumn = [ row[wordIndex] for row in dataTable]
+	less = []
+	more = []
+	for i in range(len(wholeColumn)):
+		if wholeColumn[i] <= threshold:
+			less.append(dataTable[i])
+		else:
+			more.append(dataTable[i])
+
+	e,e1,e2 = getEntropy(dataTable),getEntropy(less),getEntropy(more)
+	w1 = float(len(less))/len(dataTable)
+	w2 = float(len(more))/len(dataTable)
+	gain = e - (e1*w1 + e2*w2)
+	return gain
 
 def informationGain(factor, attr, attributes, dataTable):
 	index = attributes.index(attr)
@@ -163,12 +214,13 @@ def splitTrainingset(attribute, attributes, value, tempDataTable):
 #traversing the data tree to test the document as spam or notspam
 def traverseTree(root, dataRow, attributes):
 	temp = root
+
 	while temp.result == None:
 		tempAttr = temp.attribute
 		tempFactor = temp.factor
 		attrIndex = attributes.index(tempAttr)
 		dataRowValue = dataRow[attrIndex]
-		if dataRowValue < tempFactor:
+		if dataRowValue <= tempFactor:
 			temp = temp.left
 		else:
 			temp = temp.right
