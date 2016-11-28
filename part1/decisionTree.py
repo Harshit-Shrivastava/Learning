@@ -68,7 +68,7 @@ def homogenous(tempDataTable):
 
 def overfitting(tempDataTable):
 	#TODO: change this to 50
-	if len(tempDataTable) < 5:
+	if len(tempDataTable) < 100:
 		return True
 
 def getOverfittingResult(tempDataTable):
@@ -80,7 +80,7 @@ def getOverfittingResult(tempDataTable):
 
 def chooseAttribute(attributes, dataTable):
 	allFactors = []
-	entropies = []
+	igList = []
 	for attr in attributes:
 		s,e = getRange(attr, attributes, dataTable)
 		factors = findAllFactors(s, e)
@@ -89,13 +89,13 @@ def chooseAttribute(attributes, dataTable):
 			i = informationGain(f, attr, attributes, dataTable)
 			igf.append(i)
 		ind = igf.index(max(igf))
-		entropies.append(igf[ind])
+		igList.append(igf[ind])
 		allFactors.append(factors[ind])
-	entropyIndex = entropies.index(max(entropies))
+	igIndex = igList.index(max(igList))
 	#TODO: Correct the mistake here. Take minimum entropy instead of maximum
 	#factIndex = allFactors.index(max(entropies))
-	maxFactor = allFactors[entropyIndex]
-	splitAttribute = attributes[entropyIndex]
+	maxFactor = allFactors[igIndex]
+	splitAttribute = attributes[igIndex]
 	return splitAttribute, maxFactor
 
 def getRange(attr, attributes, dataTable):
@@ -117,8 +117,8 @@ def findAllFactors(low, high):
 def informationGain(factor, attr, attributes, dataTable):
 	index = attributes.index(attr)
 	newlist = [item[index] for item in dataTable]
-	less = float(len([1 for i in newlist if i <= factor]))
-	more = float(len([1 for i in newlist if i > factor]))
+	less = float(len([1 for i in newlist if i < factor]))
+	more = float(len([1 for i in newlist if i >= factor]))
 	if (less+more) == 0:
 		return 0
 	else:
@@ -159,3 +159,17 @@ def splitTrainingset(attribute, attributes, value, tempDataTable):
 		else:
 			rightDataTable.remove(tempDataTable[i])
 	return leftDataTable, rightDataTable
+
+#traversing the data tree to test the document as spam or notspam
+def traverseTree(root, dataRow, attributes):
+	temp = root
+	while temp.result == None:
+		tempAttr = temp.attribute
+		tempFactor = temp.factor
+		attrIndex = attributes.index(tempAttr)
+		dataRowValue = dataRow[attrIndex]
+		if dataRowValue < tempFactor:
+			temp = temp.left
+		else:
+			temp = temp.right
+	return temp.result

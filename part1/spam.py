@@ -6,7 +6,7 @@ import string
 import copy
 import numpy as np
 import pickle
-from decisionTree import createTree
+from decisionTree import createTree, traverseTree
 from node import node
 epsilon = 0.0000000001
 
@@ -223,40 +223,39 @@ def trainDecisionTree(data_directory,model):
 	with open(model, 'wb') as output:
 		pickle.dump(root, output, pickle.HIGHEST_PROTOCOL)
 	print 'Decision tree saved to memory'
-	#print 'reading file'
-	#print (pickle.load(open(model, 'rb')))
 
 
 def testDecisionTree(data_directory,model):
-	#print os.listdir(data_directory)
 	nonspamDict = {}
 	spamDict = {}
 	print('Testing the Decision Tree Classifier... Please wait')
 	for fname in os.listdir(data_directory + '/spam'):
 		with open(data_directory + '/spam/' + fname, 'r') as f:
 			lines = f.readlines()
-		for line in lines:
-			for w in line.strip().split(' '):
-				word = w.lower()
-				if word not in ('', ' ', 'the', 'to'):
-					word = word.translate(None, string.punctuation)
-					if spamDict.get(word, None) == None:
-						spamDict[word] = 1.0
-					else:
-						spamDict[word] += 1.0
+			for line in lines:
+				for w in line.strip().split(' '):
+					word = w.lower()
+					# if word == '':
+					#	raw_input()
+					if word not in ('', ' ', 'the', 'to'):
+						word = word.translate(None, string.punctuation)
+						if spamDict.get(word, None) == None:
+							spamDict[word] = 1.0
+						else:
+							spamDict[word] += 1.0
 
 	for fname in os.listdir(data_directory + '/notspam'):
 		with open(data_directory + '/notspam/' + fname, 'r') as f:
 			lines = f.readlines()
-		for line in lines:
-			for w in line.strip().split(' '):
-				word = w.lower()
-				if word not in ('', ' ', 'the', 'to'):
-					word = word.translate(None, string.punctuation)
-					if nonspamDict.get(word, None) == None:
-						nonspamDict[word] = 1.0
-					else:
-						nonspamDict[word] += 1.0
+			for line in lines:
+				for w in line.strip().split(' '):
+					word = w.lower()
+					if word not in ('', ' ', 'the', 'to'):
+						word = word.translate(None, string.punctuation)
+						if nonspamDict.get(word, None) == None:
+							nonspamDict[word] = 1.0
+						else:
+							nonspamDict[word] += 1.0
 
 	b1 = sorted(spamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(spamDict) / 1000]
 	b2 = sorted(nonspamDict.items(), key=operator.itemgetter(1), reverse=True)[:len(nonspamDict) / 1000]
@@ -264,10 +263,73 @@ def testDecisionTree(data_directory,model):
 	union_set = set(b1).union(set(b2))
 	attributes = [w[0] for w in union_set]
 	attributeSet = set(attributes)
+
 	dataTable = []
 
+	for fname in os.listdir(data_directory + '/spam'):
+		with open(data_directory + '/spam/' + fname, 'r') as f:
+			lines = f.readlines()
+			datarow = []
+			wordDict = {}
+			for line in lines:
+				for w in line.strip().split(' '):
+					word = w.lower()
+					if word not in ('', ' ', 'the', 'to'):
+						word = word.translate(None, string.punctuation)
+						if word in attributeSet:
+							if wordDict.get(word, None) == None:
+								wordDict[word] = 1
+							else:
+								wordDict[word] += 1
+			for w in attributes:
+				datarow.append(wordDict.get(w, 0))
+			datarow.append(1)  # 1 for spam, 0 for not spam
+			dataTable.append(datarow)
 
+	for fname in os.listdir(data_directory + '/notspam'):
+		with open(data_directory + '/notspam/' + fname, 'r') as f:
+			lines = f.readlines()
+			datarow = []
+			wordDict = {}
+			for line in lines:
+				for w in line.strip().split(' '):
+					word = w.lower()
+					if word not in ('', ' ', 'the', 'to'):
+						word = word.translate(None, string.punctuation)
+						if word in attributeSet:
+							if wordDict.get(word, None) == None:
+								wordDict[word] = 1
+							else:
+								wordDict[word] += 1
 
+			for w in attributes:
+				datarow.append(wordDict.get(w, 0))
+			datarow.append(0)  # 1 for spam, 0 for not spam
+			dataTable.append(datarow)
+
+	# each attributes is a word which is stored on the list called 'attributes'
+	# so, dataTable has 2646 rows and each row has 7417 attributes where the last attribute is target attribute
+	print len(dataTable)
+	print len(dataTable[0])
+	print attributes
+	# print attributeSet
+	print dataTable[0]
+	print 'Reading decision tree from memory'
+	root = pickle.load(open(model, 'rb'))
+	print (root)
+	correct = 0
+	for i in range (0, len(dataTable)):
+		dataTableRow = dataTable[i]
+		if dataTableRow[len(dataTableRow) -1] == 1:
+			actualResult = 'spam'
+		else:
+			actualResult = 'notspam'
+		predictedResult = traverseTree(root, dataTableRow, attributes)
+		if actualResult == predictedResult:
+			correct += 1
+	print 'Accuracy'
+	print correct
+	print float(correct/len(dataTable))
 
 mode,technique,data_directory,model = sys.argv[1:]
 if mode == 'train':
