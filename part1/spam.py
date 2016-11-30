@@ -14,7 +14,7 @@ dividend = 250
 
 #1 denotes decision tree based on continuous frequency distribution
 #2 for decision tree based on binary distribution
-decisionTreeClassifier = 2
+featureType = 1
 
 def trainNaiveBayes(data_directory,model):
 	#print 'Hello-word!,'.translate(None, string.punctuation)
@@ -592,9 +592,12 @@ def testBinaryDecisionTree(data_directory, model):
 mode,technique,data_directory,model = sys.argv[1:]
 if mode == 'train':
 	if technique == 'bayes':
-		trainNaiveBayes(data_directory,model)
+		if featureType==1:
+			trainNaiveBayes(data_directory,model)
+		else:
+			trainNaiveBayes(data_directory,model)
 	else:
-		if (decisionTreeClassifier == 1):
+		if (featureType == 1):
 			# decision tree classifier based on continuous frequency distribution
 			trainDecisionTree(data_directory,model)
 		else:
@@ -602,9 +605,14 @@ if mode == 'train':
 			trainBinaryDecisionTree(data_directory, model)
 else:
 	if technique == 'bayes':
-		testNaiveBayes(data_directory,model)
+
+		if featureType==1:
+			testNaiveBayes(data_directory,model)
+		else:
+			testNaiveBayes(data_directory,model)
+
 	else:
-		if (decisionTreeClassifier == 1):
+		if (featureType == 1):
 			#decision tree classifier based on continuous frequency distribution
 			testDecisionTree(data_directory,model)
 		else:
