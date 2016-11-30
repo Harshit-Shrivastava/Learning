@@ -12,18 +12,17 @@ from node import node
 epsilon = 0.0000000001
 dividend = 30
 
-#1 denotes decision tree based on continuous frequency distribution
-#2 for decision tree based on binary distribution
-featureType = 1
+#1 denotes continuous features
+#2 denotes binary features
+featureType = 2
 def trainContinuousNaiveBayes(data_directory,model):
-	#print 'Hello-word!,'.translate(None, string.punctuation)
 	nonspamDict = {}
 	spamDict = {}
 	spamDocCount, nonSpamDocCount = 0,0
 
 	spamDocCount = len(os.listdir(data_directory+'/spam'))
 	nonSpamDocCount = len(os.listdir(data_directory+'/notspam'))
-	print('Training the Naive Bayes Classifier... Please wait')
+	print('Training the Naive Bayes Classifier with Continuous features... Please wait')
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
@@ -89,45 +88,67 @@ def trainContinuousNaiveBayes(data_directory,model):
 
 
 def trainBinaryNaiveBayes(data_directory,model):
-	#print 'Hello-word!,'.translate(None, string.punctuation)
 	nonspamDict = {}
 	spamDict = {}
 	spamDocCount, nonSpamDocCount = 0,0
 
 	spamDocCount = len(os.listdir(data_directory+'/spam'))
 	nonSpamDocCount = len(os.listdir(data_directory+'/notspam'))
-	print('Training the Naive Bayes Classifier... Please wait')
+	print('Training the Naive Bayes Classifier with Binary features... Please wait')
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
+			wordSet = set()
 			for line in lines:
 				for w in line.strip().split(' '):
 					word = w.lower()
 					if word not in ('',' ','the','to'):
 						word = word.translate(None,string.punctuation)
-						if spamDict.get(word,None)==None:
-							spamDict[word] = 1.0
-						else:
-							spamDict[word] += 1.0
+						wordSet.add(word)
+						#if spamDict.get(word,None)==None:
+						#	spamDict[word] = 1.0
+						#else:
+						#	spamDict[word] += 1.0
+			for w in wordSet:
+				if spamDict.get(w,None)==None:
+					spamDict[w] = 1.0
+				else:
+					spamDict[w] += 1.0
 
 	for fname in os.listdir(data_directory+'/notspam'):
 		with open(data_directory+'/notspam/'+fname,'r') as f:
     			lines = f.readlines()
+			wordSet = set()
 			for line in lines:
 				for w in line.strip().split(' '):
 					word = w.lower()
 					if word not in ('',' ','the','to'):
 						word = word.translate(None, string.punctuation)
-						if nonspamDict.get(word,None)==None:
-							nonspamDict[word] = 1.0
-						else:
-							nonspamDict[word] += 1.0
+						wordSet.add(word)
+						#if nonspamDict.get(word,None)==None:
+						#	nonspamDict[word] = 1.0
+						#else:
+						#	nonspamDict[word] += 1.0
+			for w in wordSet:
+				if nonspamDict.get(w,None)==None:
+					nonspamDict[w] = 1.0
+				else:
+					nonspamDict[w] += 1.0
 	
+
+	for (k,v) in spamDict.items():
+		spamDict[k] = v/spamDocCount
+
+	for (k,v) in nonspamDict.items():
+		nonspamDict[k] = v/nonSpamDocCount
+
+	'''
 	for w in set(spamDict.keys())|set(nonspamDict.keys()):
 		v1 = spamDict.get(w,0.0)
 		v2 = nonspamDict.get(w,0.0)
 		spamDict[w] = v1/(v1+v2);
-		nonspamDict[w] = v2/(v1+v2);
+		nonspamDict[w] = v2/(v1+v2)
+	'''
 	#s = sum([v for (k,v) in spamDict.items()])
 	#for (k,v) in spamDict.items():
 	#	spamDict[k] = v/s
@@ -163,7 +184,7 @@ def trainBinaryNaiveBayes(data_directory,model):
 def testBinaryNaiveBayes(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
-	print('Loading the model from %s'%(model))
+	print('Loading the model with binary features from %s'%(model))
 	lines = [line.rstrip('\n') for line in open(model)]
 	line = lines[0]
 	spamDocCount , nonSpamDocCount = int(line.split(",")[0]),int(line.split(",")[1])
@@ -183,15 +204,21 @@ def testBinaryNaiveBayes(data_directory,model):
 		nonspamSum = -math.log10(nonSpamDocCount/float(spamDocCount+nonSpamDocCount))
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
+			wordSet = set()
 			for line in lines:
 				for w in line.strip().split(' '):
 					word = w.lower()
-					#word = word.translate(None, string.punctuation)
-					a = spamDict.get(word,epsilon)
-					spamSum += (-math.log10(a if a!=0.0 else epsilon))
-					a = nonspamDict.get(word,epsilon)
-					nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
-		 
+					word = word.translate(None, string.punctuation)
+					wordSet.add(word)
+					#a = spamDict.get(word,epsilon)
+					#spamSum += (-math.log10(a if a!=0.0 else epsilon))
+					#a = nonspamDict.get(word,epsilon)
+					#nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
+			for word in wordSet:
+				a = spamDict.get(word,epsilon)
+				spamSum += (-math.log10(a if a!=0.0 else epsilon))
+				a = nonspamDict.get(word,epsilon)
+				nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
 		if spamSum<nonspamSum:
 			success += 1.0
 			TP += 1.0
@@ -203,14 +230,21 @@ def testBinaryNaiveBayes(data_directory,model):
 		nonspamSum = -math.log10(nonSpamDocCount/float(spamDocCount+nonSpamDocCount))
 		with open(data_directory+'/notspam/'+fname,'r') as f:
     			lines = f.readlines()
+			wordSet = set()
 			for line in lines:
 				for w in line.strip().split(' '):
 					word = w.lower()
-					#word = word.translate(None, string.punctuation)
-					a = spamDict.get(word,epsilon)
-					spamSum += (-math.log10(a if a!=0.0 else epsilon))
-					a = nonspamDict.get(word,epsilon)
-					nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
+					word = word.translate(None, string.punctuation)
+					wordSet.add(word)
+					#a = spamDict.get(word,epsilon)
+					#spamSum += (-math.log10(a if a!=0.0 else epsilon))
+					#a = nonspamDict.get(word,epsilon)
+					#nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
+			for word in wordSet:
+				a = spamDict.get(word,epsilon)
+				spamSum += (-math.log10(a if a!=0.0 else epsilon))
+				a = nonspamDict.get(word,epsilon)
+				nonspamSum += (-math.log10(a if a!=0.0 else epsilon))
 		if spamSum>nonspamSum:
 			success += 1.0
 			FN += 1.0;
@@ -226,7 +260,7 @@ def testBinaryNaiveBayes(data_directory,model):
 def testContinuousNaiveBayes(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
-	print('Loading the model from %s'%(model))
+	print('Loading the model with continuous features from %s'%(model))
 	lines = [line.rstrip('\n') for line in open(model)]
 	line = lines[0]
 	spamDocCount , nonSpamDocCount = int(line.split(",")[0]),int(line.split(",")[1])
@@ -285,7 +319,6 @@ def testContinuousNaiveBayes(data_directory,model):
 	print 'Confusion Matrix: '
 	print(' TP = %-20.0f TN = %-20.0f'%(TP,TN))
 	print(' FP = %-20.0f FN = %-20.0f'%(FP,FN))
-
 
 '''Function to train decision tree classifier based on  continuos frequency distribution'''
 def trainDecisionTree(data_directory,model):
