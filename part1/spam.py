@@ -7,10 +7,14 @@ import copy
 import numpy as np
 import pickle
 from decisionTree import createTree, traverseTree
-from binaryDecisionTree import decisionTree
+from binaryDecisionTree import binaryDecisionTree, traverseBinaryTree
 from node import node
 epsilon = 0.0000000001
 dividend = 250
+
+#1 denotes decision tree based on continuous frequency distribution
+#2 for decision tree based on binary distribution
+decisionTreeClassifier = 2
 
 def trainNaiveBayes(data_directory,model):
 	#print 'Hello-word!,'.translate(None, string.punctuation)
@@ -126,6 +130,7 @@ def testNaiveBayes(data_directory,model):
 	print(' TP = %-20.0f TN = %-20.0f'%(TP,TN))
 	print(' FP = %-20.0f FN = %-20.0f'%(FP,FN))
 
+'''Function to train decision tree classifier based on  continuos frequency distribution'''
 def trainDecisionTree(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
@@ -229,7 +234,7 @@ def trainDecisionTree(data_directory,model):
 		pickle.dump(root, output, pickle.HIGHEST_PROTOCOL)
 	print 'Decision tree saved to memory'
 
-
+'''Function to test decision tree classifier based on continuos frequency distribution'''
 def testDecisionTree(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
@@ -350,6 +355,7 @@ def testDecisionTree(data_directory,model):
 	print 'Correctly classified %d emails out of %d' % (correct, len(dataTable))
 	print 'Clasified %d emails as spam and %d emails as not-spam' % (spam, notspam)
 
+'''Function to train decision '''
 def trainBinaryDecisionTree(data_directory, model):
 	nonspamDict = {}
 	spamDict = {}
@@ -360,8 +366,6 @@ def trainBinaryDecisionTree(data_directory, model):
 		for line in lines:
 			for w in line.strip().split(' '):
 				word = w.lower()
-				# if word == '':
-				#	raw_input()
 				if word not in ('', ' ', 'the', 'to'):
 					word = word.translate(None, string.punctuation)
 					if spamDict.get(word, None) == None:
@@ -442,12 +446,23 @@ def trainBinaryDecisionTree(data_directory, model):
 	print len(dataTable[0])
 	print attributes
 	# print attributeSet
-	print dataTable[0]
+	#print dataTable[0]
+	#print dataTable[1]
+	#print dataTable[2]
+	#print dataTable[3]
+	#print dataTable[4]
+	#print dataTable[5]
 	# build the decision tree
 	# write the decision tree model on the filename passed as 'model' so that later we can load the model and test new data instances
 	# creating the decision tree
 	# recursively create the decision tree
-	root = decisionTree(dataTable, attributes, root=None)
+	wordList = []
+	for w in attributes:
+		wordList.append(w)
+
+	print attributes
+	print wordList
+	root = binaryDecisionTree(dataTable, attributes, wordList)
 	print root
 	# save the decision tree into the model file
 	with open(model, 'wb') as output:
@@ -457,7 +472,7 @@ def trainBinaryDecisionTree(data_directory, model):
 def testBinaryDecisionTree(data_directory, model):
 	nonspamDict = {}
 	spamDict = {}
-	print('Testing Binary Decision Tree Classifier... Please wait')
+	print('Testing the Decision Tree Classifier... Please wait')
 	for fname in os.listdir(data_directory + '/spam'):
 		with open(data_directory + '/spam/' + fname, 'r') as f:
 			lines = f.readlines()
@@ -531,8 +546,8 @@ def testBinaryDecisionTree(data_directory, model):
 						if word in attributeSet:
 							if wordDict.get(word, None) == None:
 								wordDict[word] = 1
-							#else:
-							#	wordDict[word] += 1
+							else:
+								wordDict[word] += 1
 
 			for w in attributes:
 				datarow.append(wordDict.get(w, 0))
@@ -541,46 +556,57 @@ def testBinaryDecisionTree(data_directory, model):
 
 	# each attributes is a word which is stored on the list called 'attributes'
 	# so, dataTable has 2646 rows and each row has 7417 attributes where the last attribute is target attribute
-	print len(dataTable)
-	print len(dataTable[0])
-	print attributes
+	# print len(dataTable)
+	# print len(dataTable[0])
+	# print attributes
 	# print attributeSet
-	print dataTable[0]
+	# print dataTable[0]
 	print 'Reading decision tree from memory'
 	root = pickle.load(open(model, 'rb'))
-	print (root)
+	# print (root)
+	print 'Claasifying the emails'
 	correct = 0
 	spam = 0
 	notspam = 0
 	for i in range(0, len(dataTable)):
 		dataTableRow = dataTable[i]
+		# print('%d. Acutal label = %s and Predicted Label = ')
 		if dataTableRow[len(dataTableRow) - 1] == 1:
 			actualResult = 'spam'
 		else:
 			actualResult = 'notspam'
-		predictedResult = traverseTree(root, dataTableRow, attributes)
+		predictedResult = traverseBinaryTree(root, dataTableRow, attributes)
 		if predictedResult == 'spam':
 			spam += 1
 		else:
 			notspam += 1
 		if actualResult == predictedResult:
+			# print('%d. Acutal label = %s and Predicted Label = %s and its a success'%(i,actualResult,predictedResult))
 			correct += 1
-	print 'Accuracy'
-	print correct
-	print float(correct) / len(dataTable)
-	print spam
-	print notspam
+		# else:
+		# print('%d. Acutal label = %s and Predicted Label = %s and its a failure' % (i, actualResult, predictedResult))
+	print 'Accuracy %f' % (float(correct) / len(dataTable))
+	print 'Correctly classified %d emails out of %d' % (correct, len(dataTable))
+	print 'Clasified %d emails as spam and %d emails as not-spam' % (spam, notspam)
 
 mode,technique,data_directory,model = sys.argv[1:]
 if mode == 'train':
 	if technique == 'bayes':
 		trainNaiveBayes(data_directory,model)
 	else:
-		trainDecisionTree(data_directory,model)
-		#trainBinaryDecisionTree(data_directory, model)
+		if (decisionTreeClassifier == 1):
+			# decision tree classifier based on continuous frequency distribution
+			trainDecisionTree(data_directory,model)
+		else:
+			# decision tree classifier based on binary distribution
+			trainBinaryDecisionTree(data_directory, model)
 else:
 	if technique == 'bayes':
 		testNaiveBayes(data_directory,model)
 	else:
-		testDecisionTree(data_directory,model)
-		#testBinaryDecisionTree(data_directory, model)
+		if (decisionTreeClassifier == 1):
+			#decision tree classifier based on continuous frequency distribution
+			testDecisionTree(data_directory,model)
+		else:
+			#decision tree classifier based on binary distribution
+			testBinaryDecisionTree(data_directory, model)

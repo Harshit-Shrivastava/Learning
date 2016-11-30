@@ -26,10 +26,6 @@ def createTree(tempDataTable, attributes):
 	root = node(attribute, factor, tempDataTable)	#create the node with reqd info
 	root.positive = pos  # positive for spam
 	root.negative = neg  # negative for not spam
-	#print root.result
-	#print attribute
-	#print leftDataTable
-	#print rightDataTable
 	root.left = createTree(leftDataTable, attributes)		#recursively create left subtree
 	root.right = createTree(rightDataTable, attributes)	#recursively create right subtree
 	return root
