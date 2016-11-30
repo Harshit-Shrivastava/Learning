@@ -6,8 +6,8 @@ import string
 import copy
 import numpy as np
 import pickle
-from decisionTree import createTree, traverseTree
-from binaryDecisionTree import binaryDecisionTree, traverseBinaryTree
+from decisionTree import createTree, traverseTree, printDecisionTree
+from binaryDecisionTree import binaryDecisionTree, traverseBinaryTree, printBinaryDecisionTree
 from node import node
 epsilon = 0.0000000001
 dividend = 30
@@ -754,6 +754,8 @@ def testBinaryDecisionTree(data_directory, model):
 	print 'Accuracy %f' % (float(correct) / len(dataTable))
 	print 'Correctly classified %d emails out of %d' % (correct, len(dataTable))
 	print 'Clasified %d emails as spam and %d emails as not-spam' % (spam, notspam)
+	print 'Printing top nodes of the binary decision tree'
+	printBinaryDecisionTree(root)
 
 mode,technique,data_directory,model = sys.argv[1:]
 if mode == 'train':

@@ -150,3 +150,32 @@ def traverseTree(root, dataRow, attributes):
 		else:
 			temp = temp.right
 	return temp.result
+
+#idea to print tree using level order traversal adapted from
+#http://www.geeksforgeeks.org/level-order-tree-traversal/
+def printDecisionTree(root):
+    calculatedHeight = treeHeight(root)
+    if calculatedHeight > 3:
+        calculatedHeight = 4
+    for i in range(1, calculatedHeight):
+        print '--------------------'
+        print 'Nodes at level %d' % (i)
+        printLevel(root, i)
+
+def printLevel(root, level):
+    if root is None:
+        return
+    if level == 1:
+        print 'Word: %s' % (root.attribute)
+        print 'Splitting factor: %d' % (root.factor)
+    elif level > 1:
+        printLevel(root.left, level -1)
+        printLevel(root.right, level -1)
+
+def treeHeight(root):
+    if root is None:
+        return 0
+    else:
+        leftSubtreeHeight = treeHeight(root.left)
+        rightSubtreeHeight = treeHeight(root.right)
+        return (leftSubtreeHeight + 1) if (leftSubtreeHeight > rightSubtreeHeight) else (rightSubtreeHeight + 1)

@@ -96,3 +96,32 @@ def traverseBinaryTree(root, dataRow, attributes):
 		else:
 			temp = temp.right
 	return temp.result
+
+#idea to print tree using level order traversal adapted from
+#http://www.geeksforgeeks.org/level-order-tree-traversal/
+def printBinaryDecisionTree(root):
+    calculatedHeight = binaryTreeHeight(root)
+    if calculatedHeight > 3:
+        calculatedHeight = 4
+    print '--------------------'
+    for i in range(1, calculatedHeight):
+        print 'Nodes at level %d' %(i)
+        printBinaryLevel(root, i)
+        print '--------------------'
+
+def printBinaryLevel(root, level):
+    if root is None:
+        return
+    if level == 1:
+        print 'Word: %s' % (root.attribute)
+    elif level > 1:
+        printBinaryLevel(root.left, level -1)
+        printBinaryLevel(root.right, level -1)
+
+def binaryTreeHeight(root):
+    if root is None:
+        return 0
+    else:
+        leftSubtreeHeight = binaryTreeHeight(root.left)
+        rightSubtreeHeight = binaryTreeHeight(root.right)
+        return (leftSubtreeHeight + 1) if (leftSubtreeHeight > rightSubtreeHeight) else (rightSubtreeHeight + 1)
