@@ -10,7 +10,7 @@ from decisionTree import createTree, traverseTree
 from binaryDecisionTree import binaryDecisionTree, traverseBinaryTree
 from node import node
 epsilon = 0.0000000001
-dividend = 250
+dividend = 30
 
 #1 denotes decision tree based on continuous frequency distribution
 #2 for decision tree based on binary distribution
@@ -160,7 +160,7 @@ def trainBinaryNaiveBayes(data_directory,model):
 	modelFile.close()
 	print('Training complete. The model is saved on %s'%(model))
 
-def tesBinarytNaiveBayes(data_directory,model):
+def testBinaryNaiveBayes(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
 	print('Loading the model from %s'%(model))
@@ -291,7 +291,7 @@ def testContinuousNaiveBayes(data_directory,model):
 def trainDecisionTree(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
-	print('Training the Decision Tree Classifier... Please wait')
+	print('Training decision tree classifier based on continuous frequency distribution... Please wait')
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
@@ -395,7 +395,7 @@ def trainDecisionTree(data_directory,model):
 def testDecisionTree(data_directory,model):
 	nonspamDict = {}
 	spamDict = {}
-	print('Testing the Decision Tree Classifier... Please wait')
+	print('Testing decision tree classifier based on continuous distrbution... Please wait')
 	for fname in os.listdir(data_directory + '/spam'):
 		with open(data_directory + '/spam/' + fname, 'r') as f:
 			lines = f.readlines()
@@ -479,15 +479,9 @@ def testDecisionTree(data_directory,model):
 
 	# each attributes is a word which is stored on the list called 'attributes'
 	# so, dataTable has 2646 rows and each row has 7417 attributes where the last attribute is target attribute
-	#print len(dataTable)
-	#print len(dataTable[0])
-	#print attributes
-	# print attributeSet
-	#print dataTable[0]
 	print 'Reading decision tree from memory'
 	root = pickle.load(open(model, 'rb'))
-	#print (root)
-	print 'Claasifying the emails'
+	print 'Classifying emails as spams and not-spams'
 	correct = 0
 	spam = 0
 	notspam = 0
@@ -512,11 +506,11 @@ def testDecisionTree(data_directory,model):
 	print 'Correctly classified %d emails out of %d' % (correct, len(dataTable))
 	print 'Clasified %d emails as spam and %d emails as not-spam' % (spam, notspam)
 
-'''Function to train decision '''
+'''Function to train decision tree constructed on binary distribution'''
 def trainBinaryDecisionTree(data_directory, model):
 	nonspamDict = {}
 	spamDict = {}
-	print('Training the Decision Tree Classifier... Please wait')
+	print('Training decision tree classifier based on binary distributions... Please wait')
 	for fname in os.listdir(data_directory + '/spam'):
 		with open(data_directory + '/spam/' + fname, 'r') as f:
 			lines = f.readlines()
@@ -599,20 +593,9 @@ def trainBinaryDecisionTree(data_directory, model):
 
 	# each attributes is a word which is stored on the list called 'attributes'
 	# so, dataTable has 2646 rows and each row has 7417 attributes where the last attribute is target attribute
-	print len(dataTable)
-	print len(dataTable[0])
-	print attributes
-	# print attributeSet
-	#print dataTable[0]
-	#print dataTable[1]
-	#print dataTable[2]
-	#print dataTable[3]
-	#print dataTable[4]
-	#print dataTable[5]
 	# build the decision tree
 	# write the decision tree model on the filename passed as 'model' so that later we can load the model and test new data instances
-	# creating the decision tree
-	# recursively create the decision tree
+
 	wordList = []
 	for w in attributes:
 		wordList.append(w)
@@ -626,18 +609,17 @@ def trainBinaryDecisionTree(data_directory, model):
 		pickle.dump(root, output, pickle.HIGHEST_PROTOCOL)
 	print 'Decision tree saved to memory'
 
+'''Function to test decision tree constructed on  binary distributions'''
 def testBinaryDecisionTree(data_directory, model):
 	nonspamDict = {}
 	spamDict = {}
-	print('Testing the Decision Tree Classifier... Please wait')
+	print('Testing decision tree classifier with binary distributions... Please wait')
 	for fname in os.listdir(data_directory + '/spam'):
 		with open(data_directory + '/spam/' + fname, 'r') as f:
 			lines = f.readlines()
 			for line in lines:
 				for w in line.strip().split(' '):
 					word = w.lower()
-					# if word == '':
-					#	raw_input()
 					if word not in ('', ' ', 'the', 'to'):
 						word = word.translate(None, string.punctuation)
 						if spamDict.get(word, None) == None:
@@ -683,8 +665,8 @@ def testBinaryDecisionTree(data_directory, model):
 						if word in attributeSet:
 							if wordDict.get(word, None) == None:
 								wordDict[word] = 1
-							else:
-								wordDict[word] += 1
+							#else:
+							#	wordDict[word] += 1
 			for w in attributes:
 				datarow.append(wordDict.get(w, 0))
 			datarow.append(1)  # 1 for spam, 0 for not spam
@@ -703,8 +685,8 @@ def testBinaryDecisionTree(data_directory, model):
 						if word in attributeSet:
 							if wordDict.get(word, None) == None:
 								wordDict[word] = 1
-							else:
-								wordDict[word] += 1
+							#else:
+							#	wordDict[word] += 1
 
 			for w in attributes:
 				datarow.append(wordDict.get(w, 0))
@@ -713,15 +695,9 @@ def testBinaryDecisionTree(data_directory, model):
 
 	# each attributes is a word which is stored on the list called 'attributes'
 	# so, dataTable has 2646 rows and each row has 7417 attributes where the last attribute is target attribute
-	# print len(dataTable)
-	# print len(dataTable[0])
-	# print attributes
-	# print attributeSet
-	# print dataTable[0]
 	print 'Reading decision tree from memory'
 	root = pickle.load(open(model, 'rb'))
-	# print (root)
-	print 'Claasifying the emails'
+	print 'Classifying emails as spams and not-spams'
 	correct = 0
 	spam = 0
 	notspam = 0
