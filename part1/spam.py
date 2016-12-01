@@ -2,7 +2,7 @@
 ## to settings where we only considered whether a particular word appeared in a document or not and Continuous frequency corresponds to settings where we considered
 # number of times any partical appeared in a document. The accuracies are reported below-
 ## 1.1 Naive Bayes with Binary Frequency     : 98%
-## 1.2 Naive Bayes with Continuous Frequency : 95%
+## 1.2 Naive Bayes with Continuous Frequency : 97%
 ## 2.1 Decision Tree with Binary Features    : 98%
 ## 2.2 Decision Tree with Continuous Features: 98%
 ##
@@ -12,6 +12,14 @@
 # We calculated the likelihood probabilites P(word = 'apple'|Spam = 'Y') and P(word = 'apple'|Spam = 'N') from the training set. We also calculated the class
 # Priors: P(Spam = 'Y') and P(Spam = 'N'). We used odds ratio to predict the label of a document and also we have set the threshold of odds ratio to be 1. So,
 # if odds ratio is greater than 1, we label the document as 'spam' otherwise 'notspam'.
+# Most Representative Words for Spam are:
+# [('jmnetnoteinccom', 0.9999999995896848), ('213105180140', 0.9999999994696296), ('zzzzasonorg', 0.9999999994225806), ('zzzzlocalhostspamassassintaintorg', 0.9999999993746724),
+#  ('yyyynetnoteinccom', 0.9999999992382977), ('zzzzjmasonorg', 0.9999999991160494), ('mailings', 0.9999999989392593), ('zzzzlocalhostjmasonorg', 0.9999999988357724), 
+#  ('webmasterefiie', 0.9999999987760684), ('zzzzspamassassintaintorg', 0.9999999986740741)]
+# Least Representative Words for Spam are:  
+# [('guardian', 0.014492753623188406), ('comment', 0.013333333333333332), ('tom', 0.013157894736842106), ('oct', 0.012224938875305623), ('xacceptlanguage', 0.011494252873563216), 
+#  ('examplecom', 0.010416666666666664), ('formatflowed', 0.008620689655172414), ('fork', 0.007633587786259541), ('wrote', 0.007317073170731706), ('xspamlevel', 0.0008992805755395683)]
+
 
 #					## ### Decision Tree ### ##
 # Continuous frequency distibution:-
@@ -76,7 +84,7 @@ def trainContinuousNaiveBayes(data_directory,model):
 
 	spamDocCount = len(os.listdir(data_directory+'/spam'))
 	nonSpamDocCount = len(os.listdir(data_directory+'/notspam'))
-	print('Training the Naive Bayes Classifier with Continuous features... Please wait')
+	print('Training the Naive Bayes Classifier ... Please wait')
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
@@ -148,7 +156,7 @@ def trainBinaryNaiveBayes(data_directory,model):
 
 	spamDocCount = len(os.listdir(data_directory+'/spam'))
 	nonSpamDocCount = len(os.listdir(data_directory+'/notspam'))
-	print('Training the Naive Bayes Classifier with Binary features... Please wait')
+	print('Training the Naive Bayes Classifier ... Please wait')
 	for fname in os.listdir(data_directory+'/spam'):
 		with open(data_directory+'/spam/'+fname,'r') as f:
     			lines = f.readlines()
@@ -220,8 +228,13 @@ def trainBinaryNaiveBayes(data_directory,model):
 		posterior[w] = v1/(v1+v2)
 	
 	L = sorted(posterior.items(), key=operator.itemgetter(1), reverse=True)
+	mostRepresentative =  L[0:10]
+	leastRepresentative = L[-10]
+	print 'Most Representative Words for spam: '
 	print L[0:10]
-	
+	print 'Least Representative Words for spam: '
+	print L[-10:]
+
 	modelFile = open(model, 'w')
 	modelFile.write(str(spamDocCount)+","+str(nonSpamDocCount))
 	modelFile.write('\n')
@@ -832,10 +845,10 @@ def testBinaryDecisionTree(data_directory, model):
 mode,technique,data_directory,model = sys.argv[1:]
 if mode == 'train':
 	if technique == 'bayes':
-		if featureType==1:
-			trainContinuousNaiveBayes(data_directory,model)
-		else:
-			trainBinaryNaiveBayes(data_directory,model)
+		#if featureType==1:
+		trainBinaryNaiveBayes(data_directory,model)
+		#else:
+			#trainBinaryNaiveBayes(data_directory,model)
 	else:
 		if (featureType == 1):
 			# decision tree classifier based on continuous frequency distribution
