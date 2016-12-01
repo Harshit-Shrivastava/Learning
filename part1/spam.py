@@ -1,3 +1,16 @@
+## We have considered and used both binary and continuous freqeuncy of words for naive bayes classifier and decision tree classifier. Binary frequency corresponds
+## to settings where we only considered whether a particular word appeared in a document or not and Continuous frequency corresponds to settings where we considered
+# number of times any partical appeared in a document. The accuracies are reported below-
+## 1.1 Naive Bayes with Binary Frequency     : 98%
+## 1.2 Naive Bayes with Continuous Frequency : 95%
+## 2.1 Decision Tree with Binary Features    :
+## 2.2 Decision Tree with Continuous Features: 
+##
+## Among all the technique, ' ' worked best for us for the given dataset.
+					## ### Naive Bayes ### ##
+# We calculated the likelihood probabilites P(word = 'apple'|Spam = 'Y') and P(word = 'apple'|Spam = 'N') from the training set. We also calculated the class
+# Priors: P(Spam = 'Y') and P(Spam = 'N'). We used odds ratio to predict the label of a document and also we have set the threshold of odds ratio to be 1. So,
+# if odds ratio is greater than 1, we label the document as 'spam' otherwise 'notspam'.  
 import math
 import sys
 import os
