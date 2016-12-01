@@ -8,6 +8,21 @@ distribution
 #1 denotes continuous features
 #2 denotes binary features
 
+================
+Running the code
+================
+
+Command line arguments for the code:-
+mode technique dataset-directory model-file
+
+where mode is 'train' or 'test'
+technique is 'bayes' or 'decision'
+dataset-directory, for the given assignment is 'train' or 'test'
+'model-file' is the name of the model
+
+to run the code, a sample command can be like:-
+python spam.py train bayes train model
+
 ==========
 Model file
 ==========
@@ -114,10 +129,13 @@ Training the Naive Bayes Classifier using binary distributions
 ==============================================================
 Output:-
 -------
-C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train bayes train treemodel
-Training the Naive Bayes Classifier with Binary features... Please wait
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train bayes train model
+Training the Naive Bayes Classifier ... Please wait
+Most Representative Words for spam: 
 [('jmnetnoteinccom', 0.9999999995896848), ('213105180140', 0.9999999994696296), ('zzzzasonorg', 0.9999999994225806), ('zzzzlocalhostspamassassintaintorg', 0.9999999993746724), ('yyyynetnoteinccom', 0.9999999992382977), ('zzzzjmasonorg', 0.9999999991160494), ('mailings', 0.9999999989392593), ('zzzzlocalhostjmasonorg', 0.9999999988357724), ('webmasterefiie', 0.9999999987760684), ('zzzzspamassassintaintorg', 0.9999999986740741)]
-Training complete. The model is saved on treemodel
+Least Representative Words for spam: 
+[('guardian', 0.014492753623188406), ('comment', 0.013333333333333332), ('tom', 0.013157894736842106), ('oct', 0.012224938875305623), ('xacceptlanguage', 0.011494252873563216), ('examplecom', 0.010416666666666664), ('formatflowed', 0.008620689655172414), ('fork', 0.007633587786259541), ('wrote', 0.007317073170731706), ('xspamlevel', 0.0008992805755395683)]
+Training complete. The model is saved on model
 
 Process finished with exit code 0
 
@@ -141,10 +159,13 @@ Training the Naive Bayes Classifier using continuous distributions
 ==================================================================
 Output:-
 -------
-C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train bayes train treemodel
-Training the Naive Bayes Classifier with Continuous features... Please wait
-[('gifitduhcjrhpiora0wfah771edumpnjkgcgg2rwbtayjlzijgu8oxjdeedf1fkksxhjlnyyjeb', 1.0), ('yyyynetquartersnet', 1.0), ('nallen', 1.0), ('href3dmailtosatpluszeropaincomemail', 1.0), ('everbfontfont', 1.0), ('dqo8uefsqu0gtkfnrt0itw92awuiifzbtfvfpsjodhrwoi8vd3d3lm1sbxjlcg9ydgvylmnv', 1.0), ('zzzz4examplecomjmasonorg', 1.0), ('woods', 1.0), ('mailing\xa0', 1.0), ('host2171461510warsuncom', 1.0)]
-Training complete. The model is saved on treemodel
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train bayes train model
+Training the Naive Bayes Classifier ... Please wait
+Most Representative Words for spam: 
+[('jmnetnoteinccom', 0.9999999995896848), ('213105180140', 0.9999999994696296), ('zzzzasonorg', 0.9999999994225806), ('zzzzlocalhostspamassassintaintorg', 0.9999999993746724), ('yyyynetnoteinccom', 0.9999999992382977), ('zzzzjmasonorg', 0.9999999991160494), ('mailings', 0.9999999989392593), ('zzzzlocalhostjmasonorg', 0.9999999988357724), ('webmasterefiie', 0.9999999987760684), ('zzzzspamassassintaintorg', 0.9999999986740741)]
+Least Representative Words for spam: 
+[('guardian', 0.014492753623188406), ('comment', 0.013333333333333332), ('tom', 0.013157894736842106), ('oct', 0.012224938875305623), ('xacceptlanguage', 0.011494252873563216), ('examplecom', 0.010416666666666664), ('formatflowed', 0.008620689655172414), ('fork', 0.007633587786259541), ('wrote', 0.007317073170731706), ('xspamlevel', 0.0008992805755395683)]
+Training complete. The model is saved on model
 
 Process finished with exit code 0
 
