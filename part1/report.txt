@@ -13,12 +13,13 @@ Running the code
 ================
 
 Command line arguments for the code:-
-mode technique dataset-directory model-file
+python spam.py mode technique dataset-directory model-file
 
-where mode is 'train' or 'test'
+where 
+mode is 'train' or 'test'
 technique is 'bayes' or 'decision'
 dataset-directory, for the given assignment is 'train' or 'test'
-'model-file' is the name of the model
+model-file is the name of the model
 
 to run the code, a sample command can be like:-
 python spam.py train bayes train model
