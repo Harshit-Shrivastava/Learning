@@ -3,14 +3,55 @@
 # number of times any partical appeared in a document. The accuracies are reported below-
 ## 1.1 Naive Bayes with Binary Frequency     : 98%
 ## 1.2 Naive Bayes with Continuous Frequency : 95%
-## 2.1 Decision Tree with Binary Features    :
-## 2.2 Decision Tree with Continuous Features: 
+## 2.1 Decision Tree with Binary Features    : 98%
+## 2.2 Decision Tree with Continuous Features: 98%
 ##
-## Among all the technique, ' ' worked best for us for the given dataset.
+## Among all the techniques, 'Binary Frequency Distribution' worked best for us for the given
+## dataset.
 					## ### Naive Bayes ### ##
 # We calculated the likelihood probabilites P(word = 'apple'|Spam = 'Y') and P(word = 'apple'|Spam = 'N') from the training set. We also calculated the class
 # Priors: P(Spam = 'Y') and P(Spam = 'N'). We used odds ratio to predict the label of a document and also we have set the threshold of odds ratio to be 1. So,
-# if odds ratio is greater than 1, we label the document as 'spam' otherwise 'notspam'.  
+# if odds ratio is greater than 1, we label the document as 'spam' otherwise 'notspam'.
+
+#					## ### Decision Tree ### ##
+# Continuous frequency distibution:-
+# For decision tree with continuous frequency distribution, while training, as Professor Crandall
+# explained in the class and during the assignment discussions at the start of the class, we took
+# the occurrence of each word in the document as an individual event and calculated a continuous
+# frequency distribution table based on it. In this table, to find the word that we should use to
+# split the tree on, we used information gain (highest), which was calculated using entropies. We
+# calculated information gain at various intervals for the distribution of a word to calculate
+# the information gain at of those intervals (which we called split factors) for each word.
+# Highest among all information gain, and the corresponding word and split factor were chosen to
+# create a node. All the training data set having frequency distribution less than or equal to the
+# split factor for that word on that node went into the left subtree and remainig into the right
+# subtree.
+# Binary frequency distribution:-
+# The occurrence of a word in a document was given a binary value of 0 or 1, as in, if the word
+# occurs in a document, it gets a distribution 1, 0 otherwise. To select the word to use to
+# split the decision tree next, information gain was used. Word with the highest information gain
+# was chosen to split the training data set at this node. All the training data set having
+# frequency distribution 0 for this word formed the left subtree and the remaining (that has 1)
+# formed the right subtree.
+# Conditions verified while training:-
+# 1. Homogeneous data set
+# 2. Overfitting
+# 3. If all words have been observed (for binary distribution, for continuous distribution, the
+#    word can be observed again)
+# Confusion matrix is printed where TP denotes true positive (a spam was classified as a spam),
+# FN denotes true negative (a notspam is classified as notspam), FP denotes false positive (a
+# notspam was classified as a spam and TN denotes false negative (a spam was classified a notspam)
+
+###### ===========================================================================================
+#       Choosing between continuous and binary classifier:-
+###### ===========================================================================================
+
+# The variable 'featureType' in spam.py  (declared and defined just below the imports)
+# denotes whether the classification is happening over binary distribution or continuous
+# distribution
+#  1 denotes continuous features
+#  2 denotes binary features
+
 import math
 import sys
 import os
@@ -448,8 +489,6 @@ def testDecisionTree(data_directory,model):
 			for line in lines:
 				for w in line.strip().split(' '):
 					word = w.lower()
-					# if word == '':
-					#	raw_input()
 					if word not in ('', ' ', 'the', 'to'):
 						word = word.translate(None, string.punctuation)
 						if spamDict.get(word, None) == None:
@@ -531,9 +570,12 @@ def testDecisionTree(data_directory,model):
 	correct = 0
 	spam = 0
 	notspam = 0
+	TP = 0
+	TN = 0
+	FN = 0
+	FP = 0
 	for i in range (0, len(dataTable)):
 		dataTableRow = dataTable[i]
-		#print('%d. Acutal label = %s and Predicted Label = ')
 		if dataTableRow[len(dataTableRow) -1] == 1:
 			actualResult = 'spam'
 		else:
@@ -541,8 +583,16 @@ def testDecisionTree(data_directory,model):
 		predictedResult = traverseTree(root, dataTableRow, attributes)
 		if predictedResult == 'spam':
 			spam += 1
+			if predictedResult == actualResult:
+				TP += 1
+			else:
+				FP += 1
 		else:
 			notspam += 1
+			if predictedResult == actualResult:
+				FN += 1
+			else:
+				TN += 1
 		if actualResult == predictedResult:
 			#print('%d. Acutal label = %s and Predicted Label = %s and its a success'%(i,actualResult,predictedResult))
 			correct += 1
@@ -551,6 +601,12 @@ def testDecisionTree(data_directory,model):
 	print 'Accuracy %f' %(float(correct)/len(dataTable))
 	print 'Correctly classified %d emails out of %d' % (correct, len(dataTable))
 	print 'Clasified %d emails as spam and %d emails as not-spam' % (spam, notspam)
+	print 'Confusion Matrix: '
+	print(' TP = %-20.0f TN = %-20.0f' % (TP, TN))
+	print(' FP = %-20.0f FN = %-20.0f' % (FP, FN))
+
+	print 'Printing top nodes of the decision tree based on continuos frequency distribution'
+	printDecisionTree(root)
 
 '''Function to train decision tree constructed on binary distribution'''
 def trainBinaryDecisionTree(data_directory, model):
@@ -590,9 +646,7 @@ def trainBinaryDecisionTree(data_directory, model):
 	attributes = [w[0] for w in union_set]
 	if '' in attributes:
 		attributes.remove('')
-
 	attributeSet = set(attributes)
-
 	dataTable = []
 
 	for fname in os.listdir(data_directory + '/spam'):
@@ -608,8 +662,6 @@ def trainBinaryDecisionTree(data_directory, model):
 					if word in attributeSet:
 						if wordDict.get(word, None) == None:
 							wordDict[word] = 1
-						#else:
-						#	wordDict[word] += 1
 		for w in attributes:
 			datarow.append(wordDict.get(w, 0))
 		datarow.append(1)  # 1 for spam, 0 for not spam
@@ -629,9 +681,6 @@ def trainBinaryDecisionTree(data_directory, model):
 					if word in attributeSet:
 						if wordDict.get(word, None) == None:
 							wordDict[word] = 1
-						#else:
-						#	wordDict[word] += 1
-
 		for w in attributes:
 			datarow.append(wordDict.get(w, 0))
 		datarow.append(0)  # 1 for spam, 0 for not spam
@@ -646,8 +695,6 @@ def trainBinaryDecisionTree(data_directory, model):
 	for w in attributes:
 		wordList.append(w)
 
-	print attributes
-	print wordList
 	root = binaryDecisionTree(dataTable, attributes, wordList)
 	print root
 	# save the decision tree into the model file
@@ -693,9 +740,7 @@ def testBinaryDecisionTree(data_directory, model):
 	attributes = [w[0] for w in union_set]
 	if '' in attributes:
 		attributes.remove('')
-
 	attributeSet = set(attributes)
-
 	dataTable = []
 
 	for fname in os.listdir(data_directory + '/spam'):
@@ -747,6 +792,10 @@ def testBinaryDecisionTree(data_directory, model):
 	correct = 0
 	spam = 0
 	notspam = 0
+	TP = 0
+	TN = 0
+	FP = 0
+	FN = 0
 	for i in range(0, len(dataTable)):
 		dataTableRow = dataTable[i]
 		# print('%d. Acutal label = %s and Predicted Label = ')
@@ -757,8 +806,16 @@ def testBinaryDecisionTree(data_directory, model):
 		predictedResult = traverseBinaryTree(root, dataTableRow, attributes)
 		if predictedResult == 'spam':
 			spam += 1
+			if predictedResult == actualResult:
+				TP += 1
+			else:
+				FP += 1
 		else:
 			notspam += 1
+			if predictedResult == actualResult:
+				FN += 1
+			else:
+				TN += 1
 		if actualResult == predictedResult:
 			# print('%d. Acutal label = %s and Predicted Label = %s and its a success'%(i,actualResult,predictedResult))
 			correct += 1
@@ -767,6 +824,8 @@ def testBinaryDecisionTree(data_directory, model):
 	print 'Accuracy %f' % (float(correct) / len(dataTable))
 	print 'Correctly classified %d emails out of %d' % (correct, len(dataTable))
 	print 'Clasified %d emails as spam and %d emails as not-spam' % (spam, notspam)
+	print(' TP = %-20.0f TN = %-20.0f' % (TP, TN))
+	print(' FP = %-20.0f FN = %-20.0f' % (FP, FN))
 	print 'Printing top nodes of the binary decision tree'
 	printBinaryDecisionTree(root)
 

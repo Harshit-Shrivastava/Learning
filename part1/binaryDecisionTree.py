@@ -101,8 +101,8 @@ def traverseBinaryTree(root, dataRow, attributes):
 #http://www.geeksforgeeks.org/level-order-tree-traversal/
 def printBinaryDecisionTree(root):
     calculatedHeight = binaryTreeHeight(root)
-    if calculatedHeight > 3:
-        calculatedHeight = 4
+    if calculatedHeight > 4:
+        calculatedHeight = 5
     print '--------------------'
     for i in range(1, calculatedHeight):
         print 'Nodes at level %d' %(i)

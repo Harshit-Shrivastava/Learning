@@ -1,0 +1,170 @@
+==================================================
+Choosing between continuous and binary classifier:-
+==================================================
+
+The variable 'featureType' in spam.py  (declared and defined just below the imports)
+denotes whether the classification is happening over binary distribution or continuous
+distribution
+#1 denotes continuous features
+#2 denotes binary features
+
+==========
+Model file
+==========
+
+In the git repository, 'model' is a model created on Naive Bayes classifier, and a 
+'treemodel' is a model created on Decision Tree classifier.
+
+====================================================================
+Training the decision tree based on continuos frequency distribution
+====================================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train decision train treemodel
+Training decision tree classifier based on continuous frequency distribution... Please wait
+<node.node instance at 0x000000000470BDC8>
+Decision tree saved to memory
+
+Process finished with exit code 0
+
+====================================================================
+Testing the decision tree based on continuous frequency distribution
+====================================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" test decision test treemodel
+Testing decision tree classifier based on continuous distrbution... Please wait
+Reading decision tree from memory
+Classifying emails as spams and not-spams
+Accuracy 0.986296
+Correctly classified 2519 emails out of 2554
+Clasified 1198 emails as spam and 1356 emails as not-spam
+Confusion Matrix: 
+ TP = 1174                 TN = 11                  
+ FP = 24                   FN = 1345                
+Printing top nodes of the decision tree based on continuos frequency distribution
+--------------------
+Nodes at level 1
+Word: xspamlevel
+--------------------
+Nodes at level 2
+Word: zzzzlocalhostnetnoteinccom
+Word: spamassassinsightingslistssourceforgenet
+--------------------
+Nodes at level 3
+Word: footer
+Word: None
+Word: None
+Word: None
+--------------------
+Nodes at level 4
+Word: examplecom
+Word: None
+
+Process finished with exit code 0
+
+=======================================================
+Training the decision tree based on binary distribution
+=======================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train decision train treemodel
+Training decision tree classifier based on binary distributions... Please wait
+<binaryNode.node instance at 0x000000000476DE48>
+Decision tree saved to memory
+
+Process finished with exit code 0
+
+======================================================
+Testing the decision tree based on binary distribution
+======================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" test decision test treemodel
+Testing decision tree classifier with binary distributions... Please wait
+Reading decision tree from memory
+Classifying emails as spams and not-spams
+Accuracy 0.984338
+Correctly classified 2514 emails out of 2554
+Clasified 1189 emails as spam and 1365 emails as not-spam
+ TP = 1167                 TN = 18                  
+ FP = 22                   FN = 1347                
+Printing top nodes of the binary decision tree
+--------------------
+Nodes at level 1
+Word: xspamstatus
+--------------------
+Nodes at level 2
+Word: zzzzlocalhostnetnoteinccom
+Word: None
+--------------------
+Nodes at level 3
+Word: inreplyto
+Word: None
+--------------------
+Nodes at level 4
+Word: reserved
+Word: None
+--------------------
+
+Process finished with exit code 0
+
+==============================================================
+Training the Naive Bayes Classifier using binary distributions
+==============================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train bayes train treemodel
+Training the Naive Bayes Classifier with Binary features... Please wait
+[('jmnetnoteinccom', 0.9999999995896848), ('213105180140', 0.9999999994696296), ('zzzzasonorg', 0.9999999994225806), ('zzzzlocalhostspamassassintaintorg', 0.9999999993746724), ('yyyynetnoteinccom', 0.9999999992382977), ('zzzzjmasonorg', 0.9999999991160494), ('mailings', 0.9999999989392593), ('zzzzlocalhostjmasonorg', 0.9999999988357724), ('webmasterefiie', 0.9999999987760684), ('zzzzspamassassintaintorg', 0.9999999986740741)]
+Training complete. The model is saved on treemodel
+
+Process finished with exit code 0
+
+=============================================================
+Testing the Naive Bayes Classifier using binary distributions
+=============================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" test bayes test treemodel
+Loading the model with binary features from treemodel
+Testing the model...
+Accuracy: 0.987862
+Confusion Matrix: 
+ TP = 1162                 TN = 23                  
+ FP = 8                    FN = 1361                
+
+Process finished with exit code 0
+
+==================================================================
+Training the Naive Bayes Classifier using continuous distributions
+==================================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" train bayes train treemodel
+Training the Naive Bayes Classifier with Continuous features... Please wait
+[('gifitduhcjrhpiora0wfah771edumpnjkgcgg2rwbtayjlzijgu8oxjdeedf1fkksxhjlnyyjeb', 1.0), ('yyyynetquartersnet', 1.0), ('nallen', 1.0), ('href3dmailtosatpluszeropaincomemail', 1.0), ('everbfontfont', 1.0), ('dqo8uefsqu0gtkfnrt0itw92awuiifzbtfvfpsjodhrwoi8vd3d3lm1sbxjlcg9ydgvylmnv', 1.0), ('zzzz4examplecomjmasonorg', 1.0), ('woods', 1.0), ('mailing\xa0', 1.0), ('host2171461510warsuncom', 1.0)]
+Training complete. The model is saved on treemodel
+
+Process finished with exit code 0
+
+=================================================================
+Testing the Naive Bayes Classifier using continuous distributions
+=================================================================
+Output:-
+-------
+C:\Anaconda2\python.exe "C:/Fall2016/Elements of AI/Assignments/a4/hshrivas-stsutsui-islammdl-a4/part1/spam.py" test bayes test treemodel
+Loading the model with continuous features from treemodel
+Testing the model...
+Accuracy: 0.949883
+Confusion Matrix: 
+ TP = 1067                 TN = 118                 
+ FP = 10                   FN = 1359                
+
+Process finished with exit code 0
+
+===============================
+			Result
+===============================
+Among all the techniques, 'Binary Frequency Distribution' worked best for us for the given
+dataset.
